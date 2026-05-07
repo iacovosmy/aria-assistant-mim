@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aria MIM - Personal AI Assistant</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; background: #f0f0f0; font-family: -apple-system, sans-serif; }
+#login { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.card { background: #fff; border-radius: 20px; padding: 48px 40px; max-width: 420px; width: 100%; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+.icon { width: 64px; height: 64px; border-radius: 18px; background: linear-gradient(135deg,#1a6b3c,#2d9b5a); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; font-size: 28px; }
+h1 { font-size: 24px; font-weight: 700; color: #111; margin-bottom: 10px; }
+.sub { color: #666; line-height: 1.6; margin-bottom: 30px; }
+.ms-btn { display: flex; align-items: center; justify-content: center; gap: 12px; width: 100%; padding: 14px; background: #0078d4; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.ms-btn:hover { background: #006cbe; }
+#status { margin-top: 14px; font-size: 13px; color: #e00; min-height: 18px; }
+.note { font-size: 12px; color: #999; margin-top: 14px; }
+#apiscreen { display: none; min-height: 100vh; align-items: center; justify-content: center; padding: 20px; }
+#apiscreen.on { display: flex; }
+#app { display: none; flex-direction: column; height: 100vh; background: #f7f6f3; }
+#app.on { display: flex; }
+#topbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: #fff; border-bottom: 1px solid #eee; flex-shrink: 0; }
+.tl { display: flex; align-items: center; gap: 10px; }
+.av-sm { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#1a6b3c,#2d9b5a); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 700; }
+.appname { font-weight: 700; font-size: 15px; }
+.live { background: #e8f5ee; color: #1a6b3c; font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 600; }
+.signout { background: #f0eee9; border: none; border-radius: 20px; padding: 5px 14px; font-size: 12px; cursor: pointer; font-family: inherit; color: #555; }
+#msgs { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.row { display: flex; gap: 8px; }
+.row.u { flex-direction: row-reverse; }
+.mav { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 2px; }
+.mav.a { background: linear-gradient(135deg,#1a6b3c,#2d9b5a); color: #fff; }
+.mav.u { background: #e8e6e1; color: #666; }
+.bub { padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.65; max-width: 76%; word-wrap: break-word; }
+.row.a .bub { background: #fff; border: 1px solid #eee; border-top-left-radius: 4px; }
+.row.u .bub { background: #1a1916; color: #f7f6f3; border-top-right-radius: 4px; }
+.empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+.eicon { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg,#1a6b3c,#2d9b5a); display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px; }
+.etitle { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #111; }
+.esub { color: #666; line-height: 1.6; max-width: 300px; }
+#iarea { padding: 12px 20px 28px; background: #f7f6f3; flex-shrink: 0; }
+#irow { display: flex; align-items: flex-end; gap: 8px; background: #fff; border: 1.5px solid #ddd; border-radius: 18px; padding: 8px 8px 8px 16px; }
+#inp { flex: 1; border: none; outline: none; font-size: 15px; font-family: inherit; resize: none; min-height: 24px; max-height: 100px; background: transparent; color: #1a1916; }
+#inp::placeholder { color: #aaa; }
+#sbtn { width: 36px; height: 36px; border-radius: 50%; border: none; background: #1a6b3c; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+#sbtn:disabled { opacity: 0.35; }
+.tdots { display: flex; gap: 4px; padding: 6px 2px; }
+.tdot { width: 6px; height: 6px; border-radius: 50%; background: #bbb; animation: td 1.2s ease-in-out infinite; }
+.tdot:nth-child(2){animation-delay:.2s} .tdot:nth-child(3){animation-delay:.4s}
+@keyframes td { 0%,60%,100%{transform:translateY(0);opacity:.4} 30%{transform:translateY(-5px);opacity:1} }
+</style>
+</head>
+<body>
+<div id="login"><div class="card"><div class="icon">&#10022;</div><h1>Welcome to Aria</h1><p class="sub">Your personal Microsoft 365 AI assistant.<br>Sign in to get started.</p><button class="ms-btn" id="signInBtn"><svg width="20" height="20" viewBox="0 0 21 21"><rect x="1" y="1" width="9" height="9" fill="#F25022"/><rect x="11" y="1" width="9" height="9" fill="#7FBA00"/><rect x="1" y="11" width="9" height="9" fill="#00A4EF"/><rect x="11" y="11" width="9" height="9" fill="#FFB900"/></svg>Sign in with Microsoft</button><div id="status"></div><p class="note">Only your Microsoft account can access Aria.</p></div></div>
+<div id="apiscreen"><div class="card"><div class="icon">&#9881;</div><h1>One-time setup</h1><p class="sub">Enter your Anthropic API key to power Aria.</p><input id="apikey" type="password" placeholder="sk-ant-..." style="width:100%;padding:11px 14px;border:1.5px solid #ddd;border-radius:8px;font-size:14px;font-family:inherit;margin-bottom:12px;outline:none;display:block"><button id="saveKeyBtn" style="width:100%;padding:13px;background:#1a6b3c;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit">Save &amp; Start Aria</button><p style="font-size:12px;color:#999;margin-top:12px">Get your key at console.anthropic.com</p></div></div>
+<div id="app"><div id="topbar"><div class="tl"><div class="av-sm">Ar</div><span class="appname">Aria</span></div><div style="display:flex;align-items:center;gap:8px"><span class="live">M365 Live</span><button class="signout" id="userbtn">Sign out</button></div></div><div id="msgs"><div class="empty" id="empty"><div class="eicon">&#10022;</div><div class="etitle" id="greeting">Good to see you.</div><p class="esub">Ask me about your emails, calendar, Teams, or OneDrive files.</p></div></div><div id="iarea"><div id="irow"><textarea id="inp" placeholder="Ask Aria anything..." rows="1"></textarea><button id="sbtn"><svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="16" x2="10" y2="4"/><polyline points="5,9 10,4 15,9"/></svg></button></div></div></div>
+<script>
+var CLIENT_ID="MIM_CLIENT_ID_PLACEHOLDER",TENANT="consumers",SCOPES="User.Read Mail.ReadWrite Mail.Send Calendars.ReadWrite Files.ReadWrite.All",REDIRECT=location.origin+location.pathname;
+var apiKey="",hist=[],busy=false,userName="there",userInitial="Y",accessToken="";
+function setStatus(m){document.getElementById("status").textContent=m;}
+function showScreen(id){document.getElementById("login").style.display=id==="login"?"flex":"none";document.getElementById("apiscreen").className=id==="apiscreen"?"on":"";document.getElementById("app").className=id==="app"?"on":"";}
+function rand(n){var a=new Uint8Array(n);crypto.getRandomValues(a);return Array.from(a).map(function(b){return b.toString(16).padStart(2,"0");}).join("");}
+function b64url(b){return btoa(String.fromCharCode.apply(null,new Uint8Array(b))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=/g,"");}
+function doSignIn(){setStatus("Redirecting to Microsoft...");var v=rand(32);localStorage.setItem("pkce_v",v);var s=rand(16);localStorage.setItem("oauth_s",s);crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)).then(function(h){var c=b64url(h);location.href="https://login.microsoftonline.com/"+TENANT+"/oauth2/v2.0/authorize?client_id="+CLIENT_ID+"&response_type=code&redirect_uri="+encodeURIComponent(REDIRECT)+"&scope="+encodeURIComponent(SCOPES)+"&state="+s+"&code_challenge="+c+"&code_challenge_method=S256&prompt=select_account";});}
+function doSignOut(){if(!confirm("Sign out?"))return;localStorage.clear();location.href="https://login.microsoftonline.com/"+TENANT+"/oauth2/v2.0/logout?post_logout_redirect_uri="+encodeURIComponent(REDIRECT);}
+function handleCallback(){var p=new URLSearchParams(location.search),code=p.get("code"),state=p.get("state"),error=p.get("error");if(error){setStatus("Login error: "+p.get("error_description"));showScreen("login");return true;}if(!code)return false;if(state!==localStorage.getItem("oauth_s")){setStatus("State mismatch.");showScreen("login");return true;}var v=localStorage.getItem("pkce_v");history.replaceState({},"",REDIRECT);setStatus("Completing sign in...");fetch("https://login.microsoftonline.com/"+TENANT+"/oauth2/v2.0/token",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"client_id="+CLIENT_ID+"&grant_type=authorization_code&code="+encodeURIComponent(code)+"&redirect_uri="+encodeURIComponent(REDIRECT)+"&code_verifier="+v}).then(function(r){return r.json();}).then(function(d){if(d.error){setStatus("Token error: "+d.error_description);showScreen("login");return;}accessToken=d.access_token;localStorage.setItem("aria_token",accessToken);localStorage.setItem("aria_token_exp",Date.now()+(d.expires_in*1000));if(d.refresh_token)localStorage.setItem("aria_refresh",d.refresh_token);onLoggedIn();}).catch(function(e){setStatus("Error: "+e.message);showScreen("login");});return true;}
+function onLoggedIn(){apiKey=localStorage.getItem("aria_key")||"";fetch("https://graph.microsoft.com/v1.0/me",{headers:{Authorization:"Bearer "+accessToken}}).then(function(r){return r.json();}).then(function(p){userName=p.displayName||p.givenName||"there";userInitial=userName.charAt(0).toUpperCase();document.getElementById("userbtn").textContent=userName.split(" ")[0];var h=new Date().getHours();var g=h<12?"Good morning":h<17?"Good afternoon":"Good evening";document.getElementById("greeting").textContent=g+", "+userName.split(" ")[0]+".";if(!apiKey){showScreen("apiscreen");return;}showScreen("app");document.getElementById("inp").focus();}).catch(function(){if(!apiKey){showScreen("apiscreen");return;}showScreen("app");});}
+function saveKey(){var k=document.getElementById("apikey").value.trim();if(k.indexOf("sk-")!==0){alert("Please enter a valid Anthropic API key.");return;}apiKey=k;localStorage.setItem("aria_key",k);showScreen("app");document.getElementById("inp").focus();}
+function getM365Context(txt,cb){
+  var lower=txt.toLowerCase();
+  if(lower.includes("calendar")||lower.includes("meeting")||lower.includes("schedule")||lower.includes("today")||lower.includes("tomorrow")||lower.includes("week")||lower.includes("month")||lower.includes("appointment")||lower.includes("event")){
+    // Fetch 60 days of calendar so Aria can answer any date question
+    var start=new Date();start.setHours(0,0,0,0);
+    var end=new Date(start.getTime()+(60*86400000));
+    fetch("https://graph.microsoft.com/v1.0/me/calendarview?startDateTime="+start.toISOString()+"&endDateTime="+end.toISOString()+"&$top=50&$select=subject,start,end,location,organizer,attendees&$orderby=start/dateTime",{headers:{Authorization:"Bearer "+accessToken,"Prefer":"outlook.timezone=\"UTC\""}})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d.value||d.value.length===0){cb("LIVE CALENDAR DATA: No events found in the next 60 days. Calendar is completely empty.");return;}
+      var events=d.value.map(function(e){
+        var dt=new Date(e.start.dateTime+"Z");
+        var dtEnd=new Date(e.end.dateTime+"Z");
+        var dateStr=dt.toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+        var timeStr=dt.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"})+"-"+dtEnd.toLocaleTimeString("en-US",{hour:"2-digit",minute:"2-digit"});
+        return dateStr+" | "+timeStr+" | "+e.subject+(e.location&&e.location.displayName?" @ "+e.location.displayName:"");
+      }).join("\n");
+      cb("LIVE CALENDAR DATA (next 60 days, "+d.value.length+" events):\n"+events);
+    }).catch(function(e){cb("Calendar fetch error: "+e.message);});
+  } else if(lower.includes("email")||lower.includes("inbox")||lower.includes("mail")||lower.includes("message")||lower.includes("unread")){
+    fetch("https://graph.microsoft.com/v1.0/me/mailFolders/inbox/messages?$top=10&$select=subject,from,receivedDateTime,isRead,bodyPreview&$orderby=receivedDateTime desc",{headers:{Authorization:"Bearer "+accessToken}})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d.value||d.value.length===0){cb("LIVE EMAIL DATA: Inbox is empty.");return;}
+      cb("LIVE EMAIL DATA (latest 10): "+d.value.map(function(e){
+        var dt=new Date(e.receivedDateTime).toLocaleDateString("en-US",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+        return(e.isRead?"":"[UNREAD] ")+e.subject+" | from: "+e.from.emailAddress.address+" | "+dt+" | "+e.bodyPreview.slice(0,120);
+      }).join("\n"));
+    }).catch(function(e){cb("Email fetch error: "+e.message);});
+  } else { cb(""); }
+}
+function sendMsg(){var inp=document.getElementById("inp");var txt=inp.value.trim();if(!txt||busy)return;inp.value="";inp.style.height="auto";busy=true;document.getElementById("sbtn").disabled=true;var empty=document.getElementById("empty");if(empty)empty.remove();addMsg("u",txt);hist.push({role:"user",content:txt});var tid=showTyping();
+  getM365Context(txt,function(ctx){
+    var sys="You are Aria, a warm, proactive personal Microsoft 365 AI assistant. Today: "+new Date().toLocaleDateString("en-US",{weekday:"long",year:"numeric",month:"long",day:"numeric"})+". User: "+userName+". "+(ctx?"LIVE M365 DATA: "+ctx+" - Use this real data to answer specifically and directly.":"Help with emails, calendar, Teams, files. For write actions always confirm first.");
+    fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":apiKey,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-haiku-4-5-20251001",max_tokens:1024,system:sys,messages:hist})}).then(function(r){return r.json();}).then(function(d){hideTyping(tid);var reply="";if(d.content){d.content.forEach(function(b){if(b.type==="text")reply+=b.text;});}reply=reply.trim()||("Error: "+(d.error?d.error.message:"unknown"));hist.push({role:"assistant",content:reply});addMsg("a",reply);busy=false;document.getElementById("sbtn").disabled=false;inp.focus();}).catch(function(e){hideTyping(tid);addMsg("a","Error: "+e.message);hist.pop();busy=false;document.getElementById("sbtn").disabled=false;inp.focus();});
+  });
+}
+function addMsg(role,text){var msgs=document.getElementById("msgs");var row=document.createElement("div");row.className="row "+role;var av=document.createElement("div");av.className="mav "+role;av.textContent=role==="a"?"Ar":userInitial;var bub=document.createElement("div");bub.className="bub";var safe=text.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\*\*(.*?)\*\*/g,"<strong>$1<\/strong>").replace(/\n/g,"<br>");bub.innerHTML=safe;row.appendChild(av);row.appendChild(bub);msgs.appendChild(row);msgs.scrollTop=msgs.scrollHeight;}
+function showTyping(){var id="ty"+Date.now(),msgs=document.getElementById("msgs");var row=document.createElement("div");row.className="row a";row.id=id;var av=document.createElement("div");av.className="mav a";av.textContent="Ar";var bub=document.createElement("div");bub.className="bub";bub.innerHTML="<div class=\"tdots\"><div class=\"tdot\"></div><div class=\"tdot\"></div><div class=\"tdot\"></div></div>";row.appendChild(av);row.appendChild(bub);msgs.appendChild(row);msgs.scrollTop=msgs.scrollHeight;return id;}
+function hideTyping(id){var el=document.getElementById(id);if(el)el.remove();}
+window.onload=function(){apiKey=localStorage.getItem("aria_key")||"";document.getElementById("signInBtn").addEventListener("click",doSignIn);document.getElementById("saveKeyBtn").addEventListener("click",saveKey);document.getElementById("userbtn").addEventListener("click",doSignOut);document.getElementById("sbtn").addEventListener("click",sendMsg);document.getElementById("inp").addEventListener("keydown",function(e){if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMsg();}});document.getElementById("inp").addEventListener("input",function(){this.style.height="auto";this.style.height=Math.min(this.scrollHeight,100)+"px";});var stored=localStorage.getItem("aria_token"),exp=parseInt(localStorage.getItem("aria_token_exp")||"0");if(handleCallback())return;if(stored&&exp>Date.now()){accessToken=stored;onLoggedIn();return;}showScreen("login");};
+</script>
+</body>
+</html>
